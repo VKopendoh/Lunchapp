@@ -11,7 +11,7 @@ public class Restaurant extends AbstractNamedEntity {
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
     private Set<User> voters;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "menu_id")
     private Menu menu;
 

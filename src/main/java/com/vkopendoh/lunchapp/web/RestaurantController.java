@@ -11,20 +11,18 @@ import com.vkopendoh.lunchapp.to.RestaurantTo;
 import com.vkopendoh.lunchapp.util.MenuUtil;
 import com.vkopendoh.lunchapp.util.RestaurantUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.security.Principal;
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Set;
 
 @RestController
-@RequestMapping(value = RestaurantController.REST_URL,
-        produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = RestaurantController.REST_URL)
 public class RestaurantController {
     @Autowired
     private RestaurantService restaurantService;
@@ -37,7 +35,7 @@ public class RestaurantController {
 
     final static String REST_URL = "/rest/restaurant";
 
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}")
     public RestaurantTo get(@PathVariable int id) {
         return RestaurantUtil.getTo(restaurantService.get(id));
     }
@@ -66,21 +64,15 @@ public class RestaurantController {
     }
 
     @PatchMapping(value = "/{id}/vote")
-    public RestaurantTo vote(@PathVariable int id) {
+    @Transactional
+    public RestaurantTo vote(@PathVariable int id, @AuthenticationPrincipal Principal user) {
         Restaurant restaurant = restaurantService.get(id);
-        User currentUser = userService.get(SecurityUtil.authUserId());
-        if (LocalTime.now().compareTo(LocalTime.of(11, 0)) < 0) {
+        User currentUser = userService.getByName(user.getName());
+        /*if (LocalTime.now().compareTo(LocalTime.of(19, 0)) < 0) {
             return RestaurantUtil.getTo(restaurant);
-        }
-        restaurant.addVote(currentUser);
-        Restaurant lastVoteFor = currentUser.getRestaurant();
-        if (lastVoteFor != null && !lastVoteFor.equals(restaurant)) {
-            Set<User> voters = lastVoteFor.getVoters();
-            voters.remove(currentUser);
-            lastVoteFor.setVoters(voters);
-            restaurantService.save(lastVoteFor);
-        }
-        restaurantService.save(restaurant);
+        }*/
+        currentUser.setRestaurant(restaurant);
+        userService.save(currentUser);
         return RestaurantUtil.getTo(restaurant);
     }
 

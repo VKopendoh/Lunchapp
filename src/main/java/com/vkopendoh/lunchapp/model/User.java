@@ -1,5 +1,7 @@
 package com.vkopendoh.lunchapp.model;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.CollectionUtils;
 
 import javax.persistence.*;
@@ -13,11 +15,11 @@ import java.util.Set;
 
 @Entity
 @Table(name = "users")
-public class User extends AbstractNamedEntity {
+public class User extends AbstractNamedEntity implements UserDetails {
 
     @Column(name = "password", nullable = false)
     @NotBlank
-    @Size(min = 5, max = 100)
+    @Size(min = 4, max = 100)
     private String password;
 
     @Column(name = "enabled", nullable = false, columnDefinition = "bool default true")
@@ -33,7 +35,7 @@ public class User extends AbstractNamedEntity {
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<Role> roles;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
 
@@ -72,8 +74,33 @@ public class User extends AbstractNamedEntity {
         return roles;
     }
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
+    }
+
     public String getPassword() {
         return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.name;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
     }
 
     public void setRoles(Collection<Role> roles) {

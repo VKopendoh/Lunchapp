@@ -4,18 +4,20 @@ import com.vkopendoh.lunchapp.model.User;
 import com.vkopendoh.lunchapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
-import static com.vkopendoh.lunchapp.util.ValidationUtil.checkNew;
 import static com.vkopendoh.lunchapp.util.ValidationUtil.checkNotFoundWithId;
 
 @Service
 @Transactional(readOnly = true)
-public class UserService {
+public class UserService implements UserDetailsService {
 
     private final UserRepository repository;
 
@@ -33,11 +35,18 @@ public class UserService {
         return checkNotFoundWithId(user.orElseGet(null), id);
     }
 
+    public User getByName(String name) {
+        return repository.findByName(name);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
+        return repository.findByName(name);
+    }
+
     @Transactional
-    public User save(User user) {
-        checkNew(user);
+    public void save(User user) {
         repository.save(user);
-        return user;
     }
 
     @Transactional

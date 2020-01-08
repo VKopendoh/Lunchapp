@@ -7,6 +7,6 @@ import com.vkopendoh.lunchapp.to.RestaurantTo;
 public class RestaurantUtil {
     public static RestaurantTo getTo(Restaurant restaurant) {
         MenuTo menu = MenuUtil.getTo(restaurant.getMenu());
-        return new RestaurantTo(restaurant.getName(), menu, menu.getDishes().size());
+        return new RestaurantTo(restaurant.getName(), menu, restaurant.getVoters().size());
     }
 }
