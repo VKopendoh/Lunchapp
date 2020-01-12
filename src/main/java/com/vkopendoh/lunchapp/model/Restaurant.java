@@ -2,7 +2,7 @@ package com.vkopendoh.lunchapp.model;
 
 
 import javax.persistence.*;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -14,6 +14,10 @@ public class Restaurant extends AbstractNamedEntity {
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "menu_id")
     private Menu menu;
+
+    @OneToMany(mappedBy = "restaurant", cascade = {CascadeType.DETACH, CascadeType.MERGE,
+            CascadeType.PERSIST, CascadeType.REFRESH})
+    List<History> histories;
 
     public Set<User> getVoters() {
         return voters;
@@ -31,11 +35,12 @@ public class Restaurant extends AbstractNamedEntity {
         this.menu = menu;
     }
 
-    public void addVote(User user) {
-        if (voters == null) {
-            voters = new HashSet<>();
-        }
-        voters.add(user);
+    public List<History> getHistories() {
+        return histories;
+    }
+
+    public void setHistories(List<History> histories) {
+        this.histories = histories;
     }
 
     @Override

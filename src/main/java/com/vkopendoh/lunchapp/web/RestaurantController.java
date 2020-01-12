@@ -1,8 +1,7 @@
 package com.vkopendoh.lunchapp.web;
 
-import com.vkopendoh.lunchapp.model.Menu;
-import com.vkopendoh.lunchapp.model.Restaurant;
-import com.vkopendoh.lunchapp.model.User;
+import com.vkopendoh.lunchapp.model.*;
+import com.vkopendoh.lunchapp.service.HistoryService;
 import com.vkopendoh.lunchapp.service.MenuService;
 import com.vkopendoh.lunchapp.service.RestaurantService;
 import com.vkopendoh.lunchapp.service.UserService;
@@ -23,6 +22,9 @@ import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
 
+import static com.vkopendoh.lunchapp.util.MenuUtil.getMenuCreatedDesc;
+import static com.vkopendoh.lunchapp.util.RestaurantUtil.getRestaurantDesc;
+
 @RestController
 @RequestMapping(value = RestaurantController.REST_URL)
 public class RestaurantController {
@@ -34,6 +36,9 @@ public class RestaurantController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private HistoryService historyService;
 
     final static String REST_URL = "/rest/restaurant";
 
@@ -66,6 +71,8 @@ public class RestaurantController {
         Menu oldMenu = restaurant.getMenu();
         if (oldMenu == null) {
             menu.setCreateDate(LocalDate.now());
+            historyService.save(new History(Action.CREATE_MENU,
+                    getMenuCreatedDesc(menu), getRestaurantDesc(restaurant)), restaurant);
             restaurant.setMenu(menu);
             return MenuUtil.getTo(menuService.create(menu));
         }
