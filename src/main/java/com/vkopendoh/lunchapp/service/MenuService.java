@@ -4,6 +4,7 @@ import com.vkopendoh.lunchapp.model.Dish;
 import com.vkopendoh.lunchapp.model.Menu;
 import com.vkopendoh.lunchapp.repository.DishRepository;
 import com.vkopendoh.lunchapp.repository.MenuRepository;
+import com.vkopendoh.lunchapp.util.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,13 +21,12 @@ public class MenuService {
     private DishRepository dishRepository;
 
     public Menu get(int id) {
-        return repository.getOne(id);
+        return repository.findById(id).orElseThrow(() -> new NotFoundException("Menu not found, id: " + id));
     }
 
     public Menu create(Menu menu) {
-        Menu newMenu = repository.save(menu);
-        setMenuOnDishes(newMenu);
-        return newMenu;
+        menu.setDishes(setMenuOnDishes(menu));
+        return repository.save(menu);
     }
 
     public Menu update(Menu menu, int menuId) {
@@ -38,12 +38,12 @@ public class MenuService {
         return repository.save(updated);
     }
 
-    private void setMenuOnDishes(Menu menu) {
+    private List<Dish> setMenuOnDishes(Menu menu) {
         List<Dish> dishes = new ArrayList<>();
         for (Dish dish : menu.getDishes()) {
             dish.setMenu(menu);
             dishes.add(dish);
         }
-        dishRepository.saveAll(dishes);
+        return dishes;
     }
 }

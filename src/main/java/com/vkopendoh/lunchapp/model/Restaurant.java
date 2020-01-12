@@ -37,5 +37,13 @@ public class Restaurant extends AbstractNamedEntity {
         }
         voters.add(user);
     }
+
+    @Override
+    public String toString() {
+        return "Restaurant{" +
+                "voters=" + voters +
+                ", menu=" + menu +
+                '}';
+    }
 }
 

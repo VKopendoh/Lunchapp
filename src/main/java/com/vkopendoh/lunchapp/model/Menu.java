@@ -18,6 +18,14 @@ public class Menu extends AbstractBaseEntity {
     @OneToOne(mappedBy = "menu", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Restaurant restaurant;
 
+    public Menu() {
+    }
+
+    public Menu(@NotNull LocalDate createDate, List<Dish> dishes) {
+        this.createDate = createDate;
+        this.dishes = dishes;
+    }
+
     public LocalDate getCreateDate() {
         return createDate;
     }
@@ -40,5 +48,14 @@ public class Menu extends AbstractBaseEntity {
 
     public void setRestaurant(Restaurant restaurant) {
         this.restaurant = restaurant;
+    }
+
+    @Override
+    public String toString() {
+        return "Menu{" +
+                "createDate=" + createDate +
+                ", dishes=" + dishes +
+                ", restaurant=" + restaurant +
+                '}';
     }
 }

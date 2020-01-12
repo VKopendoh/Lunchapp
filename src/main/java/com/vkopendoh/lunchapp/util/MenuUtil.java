@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 public class MenuUtil {
     public static MenuTo getTo(Menu menu) {
-        List<DishTo> dishes = menu.getDishes()
+        List<DishTo> dishes = menu.getDishes() == null ? null : menu.getDishes()
                 .stream()
                 .map(dish -> new DishTo(dish.getName(), dish.getPrice()))
                 .collect(Collectors.toList());

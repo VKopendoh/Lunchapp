@@ -1,6 +1,9 @@
 package com.vkopendoh.lunchapp.to;
 
+import java.util.Objects;
+
 public class RestaurantTo {
+    private Integer id;
     private String name;
     private MenuTo menu;
     private Integer votes;
@@ -8,10 +11,19 @@ public class RestaurantTo {
     public RestaurantTo() {
     }
 
-    public RestaurantTo(String name, MenuTo menu, Integer votes) {
+    public RestaurantTo(Integer id, String name, MenuTo menu, Integer votes) {
+        this.id = id;
         this.name = name;
         this.menu = menu;
         this.votes = votes;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -36,5 +48,31 @@ public class RestaurantTo {
 
     public void setVotes(Integer votes) {
         this.votes = votes;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof RestaurantTo)) return false;
+        RestaurantTo that = (RestaurantTo) o;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(menu, that.menu) &&
+                Objects.equals(votes, that.votes);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, menu, votes);
+    }
+
+    @Override
+    public String toString() {
+        return "RestaurantTo{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", menu=" + menu +
+                ", votes=" + votes +
+                '}';
     }
 }

@@ -17,6 +17,14 @@ public class Dish extends AbstractNamedEntity {
     @JoinColumn(name = "menu_id")
     private Menu menu;
 
+    public Dish() {
+    }
+
+    public Dish(String name, @NotNull @Range(min = 0) BigDecimal price) {
+        super(null, name);
+        this.price = price;
+    }
+
     public BigDecimal getPrice() {
         return price;
     }
@@ -31,5 +39,13 @@ public class Dish extends AbstractNamedEntity {
 
     public void setMenu(Menu menu) {
         this.menu = menu;
+    }
+
+    @Override
+    public String toString() {
+        return "Dish{" +
+                "price=" + price +
+                ", menu=" + menu +
+                '}';
     }
 }

@@ -12,6 +12,7 @@ import com.vkopendoh.lunchapp.util.MenuUtil;
 import com.vkopendoh.lunchapp.util.RestaurantUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.security.Principal;
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = RestaurantController.REST_URL)
@@ -40,7 +42,13 @@ public class RestaurantController {
         return RestaurantUtil.getTo(restaurantService.get(id));
     }
 
+    @GetMapping
+    public List<RestaurantTo> getALL() {
+        return RestaurantUtil.getTos(restaurantService.getAll());
+    }
+
     @PostMapping
+    @Secured("ROLE_ADMIN")
     public ResponseEntity<Restaurant> createWithLocation(@RequestBody Restaurant restaurant) {
         Restaurant created = restaurantService.save(restaurant);
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -52,6 +60,7 @@ public class RestaurantController {
 
     @PutMapping(value = "/{id}/menu")
     @Transactional
+    @Secured("ROLE_ADMIN")
     public MenuTo createOrUpdateMenu(@RequestBody Menu menu, @PathVariable int id) {
         Restaurant restaurant = restaurantService.getFetch(id);
         Menu oldMenu = restaurant.getMenu();

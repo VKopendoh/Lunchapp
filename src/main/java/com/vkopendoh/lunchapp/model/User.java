@@ -76,7 +76,7 @@ public class User extends AbstractNamedEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return this.getRoles();
     }
 
     public String getPassword() {

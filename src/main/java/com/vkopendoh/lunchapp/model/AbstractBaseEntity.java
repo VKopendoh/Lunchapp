@@ -3,15 +3,16 @@ package com.vkopendoh.lunchapp.model;
 import org.hibernate.Hibernate;
 import org.springframework.data.domain.Persistable;
 
-import javax.persistence.*;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
 public abstract class AbstractBaseEntity implements Persistable<Integer> {
-    public static final int START_SEQ = 100000;
 
     @Id
-    @SequenceGenerator(name = "global_seq", sequenceName = "global_seq", allocationSize = 1, initialValue = START_SEQ)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "global_seq")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 //  See https://hibernate.atlassian.net/browse/HHH-3718 and https://hibernate.atlassian.net/browse/HHH-12034
 //  Proxy initialization when accessing its identifier managed now by JPA_PROXY_COMPLIANCE setting
     protected Integer id;
@@ -58,4 +59,6 @@ public abstract class AbstractBaseEntity implements Persistable<Integer> {
     public int hashCode() {
         return id == null ? 0 : id;
     }
+
+
 }
