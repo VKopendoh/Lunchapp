@@ -6,6 +6,7 @@ VALUES ('user', 'pass'),
 INSERT INTO user_roles (role, user_id)
 VALUES ('ROLE_USER', 1),
        ('ROLE_USER', 2),
+       ('ROLE_USER', 3),
        ('ROLE_ADMIN', 3);
 
 INSERT INTO menu(create_date)

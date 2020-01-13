@@ -2,18 +2,15 @@ package com.vkopendoh.lunchapp.service;
 
 import com.vkopendoh.lunchapp.model.User;
 import com.vkopendoh.lunchapp.repository.UserRepository;
+import com.vkopendoh.lunchapp.util.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
-
-import static com.vkopendoh.lunchapp.util.ValidationUtil.checkNotFoundWithId;
 
 @Service
 @Transactional(readOnly = true)
@@ -31,17 +28,19 @@ public class UserService implements UserDetailsService {
     }
 
     public User get(int id) {
-        Optional<User> user = repository.findById(id);
-        return checkNotFoundWithId(user.orElseGet(null), id);
+        return repository.findById(id)
+                .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
     }
 
     public User getByName(String name) {
-        return repository.findByName(name);
+        return repository.findByName(name)
+                .orElseThrow(() -> new NotFoundException("User not found with name: " + name));
     }
 
     @Override
-    public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
-        return repository.findByName(name);
+    public UserDetails loadUserByUsername(String name) {
+        return repository.findByName(name)
+                .orElseThrow(() -> new NotFoundException("UserDetails not found for User with name: " + name));
     }
 
     @Transactional
@@ -51,7 +50,7 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public void delete(int id) {
-        checkNotFoundWithId(repository.delete(id) != 0, id);
+        repository.deleteById(id);
     }
 }
 

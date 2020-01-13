@@ -19,6 +19,16 @@ public class Restaurant extends AbstractNamedEntity {
             CascadeType.PERSIST, CascadeType.REFRESH})
     List<History> histories;
 
+    public Restaurant() {
+    }
+
+    public Restaurant(Integer id, String name, Set<User> voters, Menu menu, List<History> histories) {
+        super(id, name);
+        this.voters = voters;
+        this.menu = menu;
+        this.histories = histories;
+    }
+
     public Set<User> getVoters() {
         return voters;
     }

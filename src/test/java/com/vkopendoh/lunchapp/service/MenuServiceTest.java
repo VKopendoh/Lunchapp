@@ -1,14 +1,11 @@
 package com.vkopendoh.lunchapp.service;
 
-import com.vkopendoh.lunchapp.LunchApplication;
+import com.vkopendoh.lunchapp.AbstractTest;
 import com.vkopendoh.lunchapp.model.Dish;
 import com.vkopendoh.lunchapp.model.Menu;
 import com.vkopendoh.lunchapp.to.MenuTo;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -20,10 +17,8 @@ import static com.vkopendoh.lunchapp.MenuTestData.*;
 import static com.vkopendoh.lunchapp.util.MenuUtil.getTo;
 import static org.junit.Assert.assertEquals;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = LunchApplication.class)
 @Transactional
-public class MenuServiceTest {
+public class MenuServiceTest extends AbstractTest {
 
     @Autowired
     private MenuService service;
