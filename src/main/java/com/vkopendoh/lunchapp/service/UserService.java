@@ -1,5 +1,7 @@
 package com.vkopendoh.lunchapp.service;
 
+import com.vkopendoh.lunchapp.model.Restaurant;
+import com.vkopendoh.lunchapp.model.Role;
 import com.vkopendoh.lunchapp.model.User;
 import com.vkopendoh.lunchapp.repository.UserRepository;
 import com.vkopendoh.lunchapp.util.exception.NotFoundException;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Transactional(readOnly = true)
@@ -46,6 +49,29 @@ public class UserService implements UserDetailsService {
     @Transactional
     public void save(User user) {
         repository.save(user);
+    }
+
+    @Transactional
+    public User update(User user, int id) {
+        User updated = get(id);
+        Restaurant restaurant = user.getRestaurant();
+        if (restaurant != null) {
+            updated.setRestaurant(restaurant);
+        }
+        Set<Role> roles = user.getRoles();
+        if (roles != null && roles.size() > 0) {
+            updated.setRoles(roles);
+        }
+        String password = user.getPassword();
+        if (password != null && password.trim().length() > 3) {
+            updated.setPassword(password);
+        }
+        String name = user.getUsername();
+        if (name != null && name.trim().length() > 3) {
+            updated.setName(name);
+        }
+        repository.save(updated);
+        return updated;
     }
 
     @Transactional

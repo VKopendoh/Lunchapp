@@ -1,5 +1,6 @@
 package com.vkopendoh.lunchapp.web;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.vkopendoh.lunchapp.model.*;
 import com.vkopendoh.lunchapp.service.HistoryService;
 import com.vkopendoh.lunchapp.service.MenuService;
@@ -20,10 +21,12 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.security.Principal;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import static com.vkopendoh.lunchapp.util.MenuUtil.getMenuCreatedDesc;
-import static com.vkopendoh.lunchapp.util.RestaurantUtil.getRestaurantDesc;
+import static com.vkopendoh.lunchapp.util.MenuUtil.getMenuUpdatedDesc;
+import static com.vkopendoh.lunchapp.util.RestaurantUtil.*;
 
 @RestController
 @RequestMapping(value = RestaurantController.REST_URL)
@@ -44,7 +47,7 @@ public class RestaurantController {
 
     @GetMapping(value = "/{id}")
     public RestaurantTo get(@PathVariable int id) {
-        return RestaurantUtil.getTo(restaurantService.get(id));
+        return RestaurantUtil.getTo(restaurantService.getFetch(id));
     }
 
     @GetMapping
@@ -59,6 +62,8 @@ public class RestaurantController {
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
                 .buildAndExpand(created.getId()).toUri();
+        historyService.save(new History(Action.CREATE_RESTAURANT,
+                "Restaurant created", getRestaurantDesc(restaurant)), restaurant);
         return ResponseEntity.created(uriOfNewResource).body(created);
 
     }
@@ -76,21 +81,43 @@ public class RestaurantController {
             restaurant.setMenu(menu);
             return MenuUtil.getTo(menuService.create(menu));
         }
+        historyService.save(new History(Action.UPDATE_MENU,
+                getMenuUpdatedDesc(oldMenu), getRestaurantDesc(restaurant)), restaurant);
         return MenuUtil.getTo(menuService.update(menu, oldMenu.getId()));
     }
 
     @PatchMapping(value = "/{id}/vote")
     @Transactional
-    public RestaurantTo vote(@PathVariable int id, @AuthenticationPrincipal Principal user) {
+    public Object vote(@PathVariable int id, @AuthenticationPrincipal Principal user) throws JsonProcessingException {
         Restaurant restaurant = restaurantService.get(id);
         User currentUser = userService.getByName(user.getName());
-        /*if (LocalTime.now().compareTo(LocalTime.of(19, 0)) < 0) {
-            return RestaurantUtil.getTo(restaurant);
-        }*/
-        currentUser.setRestaurant(restaurant);
-        userService.save(currentUser);
-        return RestaurantUtil.getTo(restaurant);
+        if (LocalTime.now().compareTo(LocalTime.of(21, 0)) < 0) {
+            return "You can vote only before 11:00 AM";
+        }
+        restaurant.addVoter(currentUser);
+        historyService.save(new History(Action.VOTE,
+                getVoteDesc(currentUser), getRestaurantDesc(restaurant)), restaurant);
+        return getTo(restaurant);
     }
 
+    @DeleteMapping(value = "/{id}")
+    @Transactional
+    @Secured("ROLE_ADMIN")
+    public String delete(@PathVariable int id) {
+        Restaurant restaurant = restaurantService.get(id);
+        restaurantService.delete(id);
+        String info = "Restaurant deleted with id:" + id;
+        historyService.save(new History(Action.DELETE_RESTAURANT,
+                info, getRestaurantDesc(restaurant)), restaurant);
+        return info;
+    }
 
+    @PutMapping(value = "/{id}")
+    @Transactional
+    @Secured("ROLE_ADMIN")
+    public RestaurantTo update(@RequestBody Restaurant restaurant, @PathVariable int id) {
+        historyService.save(new History(Action.UPDATE_RESTAURANT,
+                "Restaurant updated", getRestaurantDesc(restaurant)), restaurant);
+        return getTo(restaurantService.update(restaurant, id));
+    }
 }

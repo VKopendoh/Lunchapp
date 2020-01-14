@@ -23,6 +23,10 @@ public class MenuUtil {
         return "Menu created: " + getMenuDesc(menu);
     }
 
+    public static String getMenuUpdatedDesc(Menu menu) {
+        return "Menu created: " + getMenuDesc(menu);
+    }
+
     public static String getMenuDesc(Menu menu) {
         String menuString = null;
         try {

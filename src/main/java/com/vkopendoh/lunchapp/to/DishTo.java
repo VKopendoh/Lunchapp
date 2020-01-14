@@ -49,7 +49,7 @@ public class DishTo {
     public String toString() {
         return "DishTo{" +
                 "name='" + name + '\'' +
-                ", price=" + price +
+                ", price=" + price.toString() +
                 '}';
     }
 }

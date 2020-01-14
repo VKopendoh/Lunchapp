@@ -2,11 +2,13 @@ package com.vkopendoh.lunchapp.model;
 
 
 import javax.persistence.*;
+import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 @Entity
-public class Restaurant extends AbstractNamedEntity {
+public class Restaurant extends AbstractNamedEntity implements Serializable {
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
     private Set<User> voters;
@@ -51,6 +53,16 @@ public class Restaurant extends AbstractNamedEntity {
 
     public void setHistories(List<History> histories) {
         this.histories = histories;
+    }
+
+    public void addVoter(User user) {
+        if (voters == null) {
+            voters = new HashSet<>();
+        }
+        if (user != null) {
+            voters.add(user);
+            user.setRestaurant(this);
+        }
     }
 
     @Override

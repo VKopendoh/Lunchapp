@@ -1,6 +1,5 @@
 package com.vkopendoh.lunchapp.web;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.vkopendoh.lunchapp.AbstractControllerTest;
 import com.vkopendoh.lunchapp.model.Restaurant;
 import com.vkopendoh.lunchapp.to.RestaurantTo;
@@ -9,16 +8,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithSecurityContext;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.nio.file.attribute.UserPrincipal;
 import java.time.LocalDate;
 
-import static com.vkopendoh.lunchapp.MenuTestData.MENU_ONE;
 import static com.vkopendoh.lunchapp.MenuTestData.MENU_TWO;
-import static com.vkopendoh.lunchapp.RestaurantTestData.*;
+import static com.vkopendoh.lunchapp.RestaurantTestData.RESTAURANT_ONE;
+import static com.vkopendoh.lunchapp.RestaurantTestData.RESTAURANT_SAVED;
 import static org.junit.Assert.assertEquals;
 
 public class RestaurantControllerControllerTest extends AbstractControllerTest {
@@ -70,7 +68,6 @@ public class RestaurantControllerControllerTest extends AbstractControllerTest {
         assertEquals(200, status);
         String content = mvcResult.getResponse().getContentAsString();
         assertEquals(JsonUtil.mapToJson(MENU_TWO), content);
-
     }
 
     @Test
@@ -86,9 +83,9 @@ public class RestaurantControllerControllerTest extends AbstractControllerTest {
                 .andReturn();
         int status = mvcResult.getResponse().getStatus();
         assertEquals(200, status);
-        String content = mvcResult.getResponse().getContentAsString();
+        RestaurantTo actual = JsonUtil.mapFromJson(mvcResult.getResponse().getContentAsString(), RestaurantTo.class);
         RESTAURANT_ONE.setVotes(RESTAURANT_ONE.getVotes() + 1);
-        assertEquals(JsonUtil.mapToJson(RESTAURANT_ONE), content);
+        assertEquals(RESTAURANT_ONE, actual);
     }
 
 

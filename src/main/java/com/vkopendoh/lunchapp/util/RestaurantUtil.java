@@ -1,8 +1,8 @@
 package com.vkopendoh.lunchapp.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.vkopendoh.lunchapp.model.Menu;
 import com.vkopendoh.lunchapp.model.Restaurant;
+import com.vkopendoh.lunchapp.model.User;
 import com.vkopendoh.lunchapp.to.MenuTo;
 import com.vkopendoh.lunchapp.to.RestaurantTo;
 
@@ -23,7 +23,7 @@ public class RestaurantUtil {
                 .map(RestaurantUtil::getTo).collect(Collectors.toList());
     }
 
-    public static String restaurantCreateDesc(Restaurant restaurant){
+    public static String restaurantCreateDesc(Restaurant restaurant) {
         return "R" + getRestaurantDesc(restaurant);
     }
 
@@ -35,5 +35,9 @@ public class RestaurantUtil {
             e.printStackTrace();
         }
         return restaurantString;
+    }
+
+    public static String getVoteDesc(User currentUser) throws JsonProcessingException {
+        return "User: " + JsonUtil.mapToJson(currentUser) + "voted for restaurant";
     }
 }

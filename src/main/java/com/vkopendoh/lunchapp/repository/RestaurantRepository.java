@@ -10,9 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @Transactional(readOnly = true)
-public interface RestaurantRepository extends JpaRepository<Restaurant,Integer> {
+public interface RestaurantRepository extends JpaRepository<Restaurant, Integer> {
 
-    @Query("SELECT r FROM Restaurant r JOIN r.menu m WHERE r.id=:id ")
+    @Query("SELECT r FROM Restaurant r LEFT JOIN r.menu m LEFT JOIN m.dishes d WHERE r.id=:id ")
     Restaurant getFetch(@Param("id") int id);
 
     @EntityGraph(attributePaths = {"menu"}, type = EntityGraph.EntityGraphType.LOAD)
