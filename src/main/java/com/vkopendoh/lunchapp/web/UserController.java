@@ -2,6 +2,7 @@ package com.vkopendoh.lunchapp.web;
 
 import com.vkopendoh.lunchapp.model.User;
 import com.vkopendoh.lunchapp.service.UserService;
+import com.vkopendoh.lunchapp.to.MessageTo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -47,9 +48,9 @@ public class UserController {
     }
 
     @DeleteMapping(value = "/{id}")
-    public String delete(@PathVariable int id) {
+    public Object delete(@PathVariable int id) {
         userService.delete(id);
-        return "User deleted with id:" + id;
+        return new MessageTo("User deleted with id:" + id);
     }
 
 

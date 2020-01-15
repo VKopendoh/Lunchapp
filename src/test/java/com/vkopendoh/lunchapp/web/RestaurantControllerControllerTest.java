@@ -2,8 +2,10 @@ package com.vkopendoh.lunchapp.web;
 
 import com.vkopendoh.lunchapp.AbstractControllerTest;
 import com.vkopendoh.lunchapp.model.Restaurant;
+import com.vkopendoh.lunchapp.to.MessageTo;
 import com.vkopendoh.lunchapp.to.RestaurantTo;
 import com.vkopendoh.lunchapp.util.JsonUtil;
+import com.vkopendoh.lunchapp.util.MenuUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.MediaType;
@@ -13,6 +15,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.nio.file.attribute.UserPrincipal;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 import static com.vkopendoh.lunchapp.MenuTestData.MENU_TWO;
 import static com.vkopendoh.lunchapp.RestaurantTestData.RESTAURANT_ONE;
@@ -60,14 +63,14 @@ public class RestaurantControllerControllerTest extends AbstractControllerTest {
     public void createOrUpdateMenu() throws Exception {
         String uri = RestaurantController.REST_URL + "/1/menu";
         MENU_TWO.setCreateDate(LocalDate.now());
-        String inputJson = JsonUtil.mapToJson(MENU_TWO);
+        String inputJson = JsonUtil.mapToJson(MenuUtil.getTo(MENU_TWO));
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.put(uri)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(inputJson)).andReturn();
         int status = mvcResult.getResponse().getStatus();
         assertEquals(200, status);
         String content = mvcResult.getResponse().getContentAsString();
-        assertEquals(JsonUtil.mapToJson(MENU_TWO), content);
+        assertEquals(JsonUtil.mapToJson(MenuUtil.getTo(MENU_TWO)), content);
     }
 
     @Test
@@ -83,10 +86,13 @@ public class RestaurantControllerControllerTest extends AbstractControllerTest {
                 .andReturn();
         int status = mvcResult.getResponse().getStatus();
         assertEquals(200, status);
+        if (LocalTime.now().compareTo(LocalTime.of(11, 0)) > 0) {
+            MessageTo actualMsg = JsonUtil.mapFromJson(mvcResult.getResponse().getContentAsString(), MessageTo.class);
+            assertEquals(new MessageTo("You can vote only before 11:00 AM"), actualMsg);
+            return;
+        }
         RestaurantTo actual = JsonUtil.mapFromJson(mvcResult.getResponse().getContentAsString(), RestaurantTo.class);
         RESTAURANT_ONE.setVotes(RESTAURANT_ONE.getVotes() + 1);
         assertEquals(RESTAURANT_ONE, actual);
     }
-
-
 }

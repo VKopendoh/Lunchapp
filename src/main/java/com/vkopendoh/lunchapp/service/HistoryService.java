@@ -22,6 +22,10 @@ public class HistoryService {
         return historyRepository.findAllByRestaurantId(id);
     }
 
+    public List<History> getAll() {
+        return historyRepository.findAll();
+    }
+
     public void save(History history, Restaurant restaurant) {
         history.setRestaurant(restaurant);
         historyRepository.save(history);

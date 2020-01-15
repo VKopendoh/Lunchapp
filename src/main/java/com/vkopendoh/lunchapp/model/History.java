@@ -26,6 +26,9 @@ public class History extends AbstractBaseEntity {
     @NotNull
     private LocalDateTime actionTime;
 
+    public History() {
+    }
+
     public History(@NotNull Action action, String description, String restaurantInfo) {
         this.action = action;
         this.description = description;

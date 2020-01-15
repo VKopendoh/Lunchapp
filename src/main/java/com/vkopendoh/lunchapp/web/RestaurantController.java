@@ -7,6 +7,7 @@ import com.vkopendoh.lunchapp.service.MenuService;
 import com.vkopendoh.lunchapp.service.RestaurantService;
 import com.vkopendoh.lunchapp.service.UserService;
 import com.vkopendoh.lunchapp.to.MenuTo;
+import com.vkopendoh.lunchapp.to.MessageTo;
 import com.vkopendoh.lunchapp.to.RestaurantTo;
 import com.vkopendoh.lunchapp.util.MenuUtil;
 import com.vkopendoh.lunchapp.util.RestaurantUtil;
@@ -63,7 +64,7 @@ public class RestaurantController {
                 .path(REST_URL + "/{id}")
                 .buildAndExpand(created.getId()).toUri();
         historyService.save(new History(Action.CREATE_RESTAURANT,
-                "Restaurant created", getRestaurantDesc(restaurant)), restaurant);
+                "Restaurant created", getRestaurantDesc(created)), created);
         return ResponseEntity.created(uriOfNewResource).body(created);
 
     }
@@ -72,7 +73,7 @@ public class RestaurantController {
     @Transactional
     @Secured("ROLE_ADMIN")
     public MenuTo createOrUpdateMenu(@RequestBody Menu menu, @PathVariable int id) {
-        Restaurant restaurant = restaurantService.getFetch(id);
+        Restaurant restaurant = restaurantService.get(id);
         Menu oldMenu = restaurant.getMenu();
         if (oldMenu == null) {
             menu.setCreateDate(LocalDate.now());
@@ -91,8 +92,8 @@ public class RestaurantController {
     public Object vote(@PathVariable int id, @AuthenticationPrincipal Principal user) throws JsonProcessingException {
         Restaurant restaurant = restaurantService.get(id);
         User currentUser = userService.getByName(user.getName());
-        if (LocalTime.now().compareTo(LocalTime.of(21, 0)) < 0) {
-            return "You can vote only before 11:00 AM";
+        if (LocalTime.now().compareTo(LocalTime.of(11, 0)) > 0) {
+            return new MessageTo("You can vote only before 11:00 AM");
         }
         restaurant.addVoter(currentUser);
         historyService.save(new History(Action.VOTE,
@@ -103,13 +104,13 @@ public class RestaurantController {
     @DeleteMapping(value = "/{id}")
     @Transactional
     @Secured("ROLE_ADMIN")
-    public String delete(@PathVariable int id) {
+    public Object delete(@PathVariable int id) {
         Restaurant restaurant = restaurantService.get(id);
         restaurantService.delete(id);
         String info = "Restaurant deleted with id:" + id;
         historyService.save(new History(Action.DELETE_RESTAURANT,
                 info, getRestaurantDesc(restaurant)), restaurant);
-        return info;
+        return new MessageTo(info);
     }
 
     @PutMapping(value = "/{id}")

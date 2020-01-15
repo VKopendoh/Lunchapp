@@ -5,6 +5,7 @@ import com.vkopendoh.lunchapp.model.Restaurant;
 import com.vkopendoh.lunchapp.to.RestaurantTo;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.vkopendoh.lunchapp.RestaurantTestData.*;
@@ -12,6 +13,7 @@ import static com.vkopendoh.lunchapp.util.RestaurantUtil.getTo;
 import static org.junit.Assert.assertEquals;
 
 @Transactional
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class RestaurantServiceTest extends AbstractTest {
 
     @Autowired

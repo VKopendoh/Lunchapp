@@ -1,8 +1,9 @@
 package com.vkopendoh.lunchapp.web;
 
+import com.vkopendoh.lunchapp.AbstractControllerTest;
 import org.junit.Test;
 
-public class UserControllerTest {
+public class UserControllerTest extends AbstractControllerTest {
 
     @Test
     public void getAll() {
